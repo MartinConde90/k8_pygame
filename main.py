@@ -8,6 +8,7 @@ FPS = 60
 
 class Game:
     clock = pg.time.Clock()
+    score = 0
 
     def __init__(self):
         self.screen = pg.display.set_mode((800, 600))
@@ -17,11 +18,19 @@ class Game:
         self.player = Racket()
         self.ball = Ball()
 
+        self.tileGroup = pg.sprite.Group()
+        for j in range(5):
+            for i in range(16):
+                t = Tile(i*50 , 10+j*32) #nos pinta los ladrillos, y cada vez, 50 posiciones mas a la derecha
+                self.tileGroup.add(t)
+            
         self.playerGroup = pg.sprite.Group()
         self.allSprites = pg.sprite.Group()
         self.playerGroup.add(self.player)
         self.allSprites.add(self.player) #esto pinta el jugador
         self.allSprites.add(self.ball) #esto pinta la bola
+        self.allSprites.add(self.tileGroup)
+        self.score = 0
 
 
     def gameOver(self):
@@ -47,15 +56,17 @@ class Game:
         if keys_pressed[K_RIGHT]:
             self.player.go_right()
 
-
-
-
     def mainloop(self):
         while True:
             dt = self.clock.tick(FPS)
 
             self.handleEvents()
-            self.ball.test_collision(self.playerGroup)
+
+            self.ball.test_collisions(self.playerGroup)
+            self.score += self.ball.test_collisions(self.tileGroup, True)
+            print(self.score)
+            
+
             if self.ball.speed == 0: #se ha producido colision
                 self.player.lives -= 1
                 self.ball.start()

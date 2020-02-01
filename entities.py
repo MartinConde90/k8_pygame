@@ -1,6 +1,6 @@
 import pygame as pg
 from pygame.locals import *
-from random import choice
+from random import choice, randint
 
 FPS = 60
 
@@ -73,9 +73,37 @@ class Ball(pg.sprite.Sprite):
         if self.rect.x >=775: #si es mayor de 600
             self.dx = self.dx * -1
 
-    def test_collision(self, group):
+
+    def test_collisions(self, group, borra=False):
+        candidates = pg.sprite.spritecollide(self, group, borra)
+        if len(candidates) > 0:
+            self.dy *= -1
+        return len(candidates)
+    '''
+    def test_raquet(self, group):
         candidates = pg.sprite.spritecollide(self, group, False) #esto está en la documentacion pygame
         if len(candidates) > 0:
             self.dy *= -1
+    
+    def test_tiles(self, group):
+        candidates = pg.sprite.spritecollide(self, group, True) #el True dice, si encuentras un candidato, sacalo del grupo
+        if len(candidates) > 0:
+            self.dy *= -1
+    '''
 
+class Tile(pg.sprite.Sprite):
+    w = 50
+    h = 32
 
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+        pg.sprite.Sprite.__init__(self) #inicializar sprite
+
+        self.image = pg.Surface((self.w, self.h), SRCALPHA, 32) #surface es un objeto basico de pygame, está en la doc, SRCALPHA, que admita transparencias, es de locals, que importamos, el 32 es la profundidad de colores
+        pg.draw.rect(self.image, (randint(0,255), randint(0,255), randint(0,255)),(1, 1, self.w-2, self.h-2)) #permite dibujar figuras, me lo pintas en self.image, le damos color y la posicion, 0,0 son las coordenadas del rectangulo, no de la pantalla
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
