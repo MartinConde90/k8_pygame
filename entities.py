@@ -4,6 +4,7 @@ from random import choice, randint
 
 FPS = 60
 
+
 class Racket(pg.sprite.Sprite):
     pictures = 'racket_horizontal.png'
     speed = 10
@@ -42,6 +43,8 @@ class Ball(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
 
         self.image = pg.image.load('resources/{}'.format(self.pictures)).convert_alpha()
+        self.ping = pg.mixer.Sound('resources/sounds/ping.wav')
+        self.lost_point = pg.mixer.Sound('resources/sounds/lost-point.wav')
     
         self.rect = self.image.get_rect()
         self.w = self.rect.w
@@ -63,21 +66,26 @@ class Ball(pg.sprite.Sprite):
         if self.rect.y >=600 - self.h: #si es mayor de 600
             #self.dy = self.dy * -1 #inviertes la direccion y ahora seguirá hacia la derecha pero arriba, al haber llegado al limite, pierde vida
             self.speed = 0
+            self.lost_point.play()
 
         if self.rect.y <=0: #si es menor de 0
             self.dy = self.dy * -1
+            self.ping.play()
 
         if self.rect.x <=0: #si es menor de 0
             self.dx = self.dx * -1
+            self.ping.play()
         
         if self.rect.x >=775: #si es mayor de 600
             self.dx = self.dx * -1
+            self.ping.play()
 
 
     def test_collisions(self, group, borra=False):
         candidates = pg.sprite.spritecollide(self, group, borra)
         if len(candidates) > 0:
             self.dy *= -1
+            self.ping.play()
         return len(candidates)
     '''
     def test_raquet(self, group):
