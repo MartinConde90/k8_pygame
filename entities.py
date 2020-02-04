@@ -4,6 +4,21 @@ from random import choice, randint
 
 FPS = 60
 
+class Mapa:
+    def __init__(self):
+        self.tiles = pg.sprite.Group()
+    def bricks(self, strmap, frame):
+        rows = len(strmap)
+        for i in range(rows):
+            elements = len(strmap[i])
+            for j in range(elements):
+                pos = strmap[i][j]
+                if pos == 'X':
+                    t = frame(j*frame.w, 40+i*frame.h)
+                    self.tiles.add(t)
+                if pos == '-':
+                    continue
+        return self.tiles
 
 class Racket(pg.sprite.Sprite):
     pictures = 'racket_horizontal.png'
@@ -52,6 +67,8 @@ class Ball(pg.sprite.Sprite):
 
         self.start()
 
+        self.numgolpes = 0
+
     def start(self):
         self.rect.x = self.x
         self.rect.y = self.y 
@@ -83,10 +100,11 @@ class Ball(pg.sprite.Sprite):
 
     def test_collisions(self, group, borra=False):
         candidates = pg.sprite.spritecollide(self, group, borra)
-        if len(candidates) > 0:
+        nc = len(candidates)
+        if nc > 0:
             self.dy *= -1
             self.ping.play()
-        return len(candidates)
+        return nc
     '''
     def test_raquet(self, group):
         candidates = pg.sprite.spritecollide(self, group, False) #esto está en la documentacion pygame

@@ -8,6 +8,12 @@ FPS = 60
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 
+level1 = ['XXXXXXXXXXXXXXXX',
+           'XXXXXX---XXXXXXX',
+           'XXXXXXX-XXXXXXXX',
+           'XXXXXXXXXXXXXXXX',
+           ]
+
 class Game:
     clock = pg.time.Clock()
     score = 0
@@ -29,31 +35,26 @@ class Game:
         self.player = Racket()
         self.ball = Ball()
         self.tileGroup = pg.sprite.Group()
-            
+
         self.playerGroup = pg.sprite.Group()
         self.allSprites = pg.sprite.Group()
         self.playerGroup.add(self.player)
-        
-        
-        
+              
         self.start_partida()
 
-    def create_tiles(self):
-        self.tileGroup.empty() #esto vacia el grupo
-        self.allSprites.empty()
-        for j in range(5):
-            for i in range(16):
-                t = Tile(i*50 , 60+j*32) #nos pinta los ladrillos, y cada vez, 50 posiciones mas a la derecha
-                self.tileGroup.add(t)
-        self.allSprites.add(self.tileGroup) #esto pinta los ladrillos
-        self.allSprites.add(self.player) #esto pinta el jugador
-        self.allSprites.add(self.ball) #esto pinta la bola
+    
+        
 
     def start_partida(self):
         self.player.lives = 3
         self.ball.start()
-        self.create_tiles()
+        self.tileGroup.empty() #esto vacia el grupo
+        self.allSprites.empty()
+        self.tileGroup = Mapa().bricks(level1, Tile)
         self.score = 0
+        self.allSprites.add(self.tileGroup) #esto pinta los ladrillos
+        self.allSprites.add(self.player) #esto pinta el jugador
+        self.allSprites.add(self.ball) #esto pinta la bola
 
     def quitGame(self):
         pg.quit()
@@ -91,8 +92,11 @@ class Game:
         while True:
             dt = self.clock.tick(FPS)
 
-            if self.player.lives > 0:
+            if self.player.lives > 0 and len(self.tileGroup) > 0:
                 self.bucle_partida(dt)
+
+            elif len(self.tileGroup) == 0:
+                pass
 
             else:
                 self.gameOver()
